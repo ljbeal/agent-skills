@@ -24,6 +24,17 @@ then report the results.
 - **Status updates** go in issue comments. Never rewrite the title or
   description to track progress.
 
+## Reproduction
+
+Reproduce and explore every defect fully before creating its issue.
+
+- Run the failing command yourself and capture the exact error.
+- Trace the relevant code path to the root cause. File the issue against
+  the cause, not the symptom.
+- If the defect does not reproduce in your environment, say so, record what
+  was tried, and ask the reporter for environment details before creating
+  the issue.
+
 ## Workflow
 
 1. Discover the tracker tool and its conventions. Check the repository docs

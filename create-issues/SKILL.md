@@ -40,6 +40,9 @@ Reproduce and explore every defect fully before creating its issue.
 1. Discover the tracker tool and its conventions. Check the repository docs
    (AGENTS.md, CONTRIBUTING.md) and existing issues. Note the CLI (for example
    `glab` for GitLab, `gh` for GitHub) and the highest existing issue number.
+   On GitLab, `scripts/glab_query.py issues --next-id` (next to this skills
+   directory) prints that number + 1; note `glab issue list` prints nothing
+   in work-items projects, while the script's issues subcommand works.
 2. For each item, create the issue with the tracker CLI. Pass multi-line
    descriptions via a heredoc so the shell does not mangle them. Collect every
    returned URL as it appears.

@@ -75,7 +75,9 @@ close out.
   freely, but must be executed after any change.
 - If the new test fails for the wrong reason (fixture, collection, import),
   fix the test. Do not weaken the assertion.
-- Never merge the merge request without a green pipeline.
+- Never merge the merge request without a green pipeline. On GitLab,
+  `scripts/glab_query.py pipelines` and `jobs` (next to this skills
+  directory) report pipeline and job status for a ref or pipeline ID.
 
 ## Per-repo override
 

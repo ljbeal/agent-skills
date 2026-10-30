@@ -44,9 +44,10 @@ With `glab` (GitLab):
 - Read the `status:` line and the per-job lines. Job log:
   `glab ci trace <job-name> --pipeline-id <id>`.
 - Retry a failed job: `glab ci retry <job-name> --pipeline-id <id>`.
-- Helpers next to this skills directory: `scripts/glab_query.py pipelines`
-  finds a pipeline by ref; `scripts/glab_query.py jobs <id>` lists job
-  statuses and exits 1 on a failed or canceled job.
+- Helpers in the skills repo root (this skill's parent directory):
+  `~/.config/opencode/skills/scripts/glab_query.py pipelines` finds a
+  pipeline by ref; `~/.config/opencode/skills/scripts/glab_query.py jobs
+  <id>` lists job statuses and exits 1 on a failed or canceled job.
 - Avoid `glab ci status`: it reports a single job, not the pipeline.
 - Poll in a loop over `glab ci get` until `status:` reads `success`,
   `failed`, or `canceled`. Test jobs can take many minutes.

@@ -47,7 +47,7 @@ With `glab` (GitLab):
 - Helpers in the skills repo root (this skill's parent directory):
   `~/.config/opencode/skills/scripts/glab_query.py pipelines` finds a
   pipeline by ref; `~/.config/opencode/skills/scripts/glab_query.py jobs
-  <id>` lists job statuses and exits 1 on a failed or canceled job.
+<id>` lists job statuses and exits 1 on a failed or canceled job.
 - Avoid `glab ci status`: it reports a single job, not the pipeline.
 - Poll in a loop over `glab ci get` until `status:` reads `success`,
   `failed`, or `canceled`. Test jobs can take many minutes.
@@ -63,7 +63,7 @@ With `gh` (GitHub): `gh run list --branch <branch>` for the run,
 ## Workflow
 
 1. Confirm the issue, its branch, and its merge request with the tracker CLI.
-   The merge request must be un-drafted and green.
+   The merge request must be green.
 2. Re-run the verification from the `work-issue` skill: the affected tests,
    the full affected suite, and the linter and formatter on changed files.
 3. Build the review surface:

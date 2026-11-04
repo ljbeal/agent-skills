@@ -9,7 +9,7 @@ Standard pattern: issue first, then branch + merge request. The branch exists
 only to feed the merge request; never create one without it.
 
 Phases: **Start** (branch + failing tests + draft merge request), **Finish**
-(verify the fix, un-draft, merge). Skip a phase only when the user has already
+(verify the fix). Skip a phase only when the user has already
 done it.
 
 ## Discover repo values
@@ -50,13 +50,13 @@ from existing branches and merge requests:
 6. Commit the tests following the repository commit convention, referencing
    the issue. Skip this step when no test applies.
 7. Push the branch.
-8. Create the merge request. Title prefixed with the draft marker while the
-   pipeline is red. Target: the development branch. Description: follow
+8. Create the merge request. Title prefixed with the draft marker. Target:
+   the development branch. Description: follow
    `references/mr-template.md`. End the description with the close link to the
    issue.
 
    The merge request is intentionally red while it carries only failing
-   tests. Keep the draft marker until the fix is in and green.
+   tests.
 
 ## Phase 2: Finish
 
@@ -67,8 +67,7 @@ close out.
 2. Run the full affected suite, with the repository's parallel flags.
 3. Run the linter and formatter check on the changed files.
 4. Commit and push any remaining changes.
-5. Remove the draft marker from the merge request title.
-6. Report: tests, suite result, lint result, merge request URL.
+5. Report: tests, suite result, lint result, merge request URL.
 
 ## Rules
 

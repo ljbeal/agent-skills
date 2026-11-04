@@ -34,7 +34,9 @@ from existing branches and merge requests:
    Cap the branch name at 40 chars, issue number included, so the full
    subject stays within ~72 chars. If the issue title would exceed that,
    shorten the slug to its most meaningful words and keep the issue number.
-3. Write the failing test first.
+3. Write the failing test first. The failing test is required only for
+   issues with the core codebase. Skip it for issues that change no code,
+   such as documentation.
    - Place it beside the tests for the affected area.
    - Match the style of the neighbouring test files: docstring stating what is
      exercised, shared fixtures, one class per behaviour.
@@ -46,7 +48,7 @@ from existing branches and merge requests:
    repository's parallel flags for large sections. Expected: only the new
    tests fail, everything else passes.
 6. Commit the tests following the repository commit convention, referencing
-   the issue.
+   the issue. Skip this step when no test applies.
 7. Push the branch.
 8. Create the merge request. Title prefixed with the draft marker while the
    pipeline is red. Target: the development branch. Description: follow

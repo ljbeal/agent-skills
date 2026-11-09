@@ -12,8 +12,8 @@ There are 3 existing dev skills:
 
 Shared tooling:
 
-- `scripts/` — glab query helpers (`glab_query.py`: issues, pipelines, jobs);
-  see `scripts/README.md`
+- `scripts/` — glab query helpers (`glab_query.py`: issues, milestones,
+  pipelines, jobs); see `scripts/README.md`
 
 Each skill offloads much of the admin work associated with development work, however their use-cases are best summarised in image form:
 

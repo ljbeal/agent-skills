@@ -27,6 +27,8 @@ existing branches and merge requests:
 - The linter and formatter commands
 - The merge style (merge, squash, or rebase)
 - The tracker CLI and its close-link format (for example `Closes #N`)
+- The issue's version milestone (if any), and its progress
+  (`scripts/glab_query.py milestones`)
 
 ## Pipeline status
 
@@ -112,6 +114,10 @@ With `gh` (GitHub): `gh run list --branch <branch>` for the run,
      merge commit or merge request reference. Name any retried jobs.
    - Close the issue with the tracker CLI. If the close link did not auto-
      close it, close it explicitly.
+   - If the issue had a milestone, report the milestone's new progress
+     (for example `0.15.1: 3/3 complete`, from `scripts/glab_query.py
+     milestones`). Reporting only: this skill never closes a milestone and
+     does not propose closing one.
 
 ## Rules
 

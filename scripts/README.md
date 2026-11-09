@@ -8,7 +8,8 @@ auth handling still applies.
 
 | Script | Purpose |
 |---|---|
-| `glab_query.py issues` | List issues (work items): `--state opened\|closed\|all`, `--limit N`, `--next-id` |
+| `glab_query.py issues` | List issues (work items): `--state opened\|closed\|all`, `--limit N`, `--next-id`, `--milestone <title>` |
+| `glab_query.py milestones` | List milestones with issue and MR progress: `--state active\|closed\|all` (default `active`), `--no-progress` |
 | `glab_query.py pipelines` | List recent pipelines: `--ref <ref>` (default: current branch), `--limit N` |
 | `glab_query.py jobs <pipeline-id>` | Jobs and statuses of one pipeline; takes the long external ID |
 
@@ -17,6 +18,8 @@ Examples:
 ```sh
 scripts/glab_query.py issues --state opened
 scripts/glab_query.py issues --next-id
+scripts/glab_query.py issues --milestone 0.15.1
+scripts/glab_query.py milestones
 scripts/glab_query.py pipelines --ref devel --limit 5
 scripts/glab_query.py jobs 3003993071
 ```
@@ -42,3 +45,19 @@ gate a shell script. Any other error exits 2 with a message on stderr.
 - GitLab returns error objects (dicts), not a list, for some bad parameters.
   The `api()` helper detects that and reports it instead of crashing with a
   confusing traceback.
+- Milestone state values are `active` and `closed`, unlike issues, which use
+  `opened`. `glab milestone list --state active` is the standard query for
+  open version milestones.
+- The issues endpoint ignores `milestone_title` on work-items projects
+  (it silently returns every issue). `glab_query.py` filters client-side by
+  each issue's `milestone.title` field instead. The inconsistency is one-sided:
+  the merge requests endpoint does honour its `milestone=<title>` filter, so
+  MR counts per milestone come straight from the API.
+- The milestones REST response carries no issue counts. `glab_query.py
+  milestones` counts issues client-side (two paged issue queries), so
+  `--no-progress` exists for repos where that is too slow.
+- `projects/:id/milestones/:milestone_id` takes the global milestone ID
+  (for example `7708221`), not the project-scoped iid.
+- `glab api` needs the project path URL-encoded in the URL
+  (`projects/l_sim%2Fremotemanager`); unencoded, it 404s. The `api()`
+  helper encodes it, so new subcommands must go through it.

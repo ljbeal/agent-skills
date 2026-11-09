@@ -23,10 +23,17 @@ from existing branches and merge requests:
   parallel flags and any required environment variables or interpreter path)
 - The linter and formatter commands
 - The tracker CLI and its close-link format (for example `Closes #N`)
+- The issue's version milestone, and the active milestones if the issue has
+  none (`glab milestone list --state active` or `scripts/glab_query.py
+  milestones`)
 
 ## Phase 1: Start
 
-1. Confirm the issue with the tracker CLI if it is not already in context.
+1. Confirm the issue with the tracker CLI if it is not already in context,
+   including its milestone. If the issue has no milestone, attach it to the
+   active one (or ask which, per the `create-issues` skill's Milestones
+   section) before proceeding: an issue being worked should always carry its
+   target version.
 2. Create the branch from the development branch on a clean tree, using the
    repository naming convention. Keep the slug short: GitLab builds the merge
    commit subject as `Merge branch '<branch>' into '<target>'` and truncates
@@ -50,8 +57,9 @@ from existing branches and merge requests:
 6. Commit the tests following the repository commit convention, referencing
    the issue. Skip this step when no test applies.
 7. Push the branch.
-8. Create the merge request. Title prefixed with the draft marker. Target:
-   the development branch. Description: follow
+8. Create the merge request, attached to the issue's milestone
+   (on GitLab, `glab mr create --milestone <title>`). Title prefixed with the
+   draft marker. Target: the development branch. Description: follow
    `references/mr-template.md`. End the description with the close link to the
    issue.
 
@@ -86,7 +94,8 @@ This is the generic skill. If this generic version loaded, no project-local
 override exists for this repository. After discovering the repo values above,
 propose a project-local override at `.opencode/skills/work-issue/SKILL.md`
 that inlines those concrete values (branch target and naming, exact test and
-lint commands, tracker CLI, MR template), plus its own
+lint commands, tracker CLI, the version file and its current version, MR
+template), plus its own
 `references/mr-template.md`.
 
 Create overrides on a per-repo basis: each repository, or each package within

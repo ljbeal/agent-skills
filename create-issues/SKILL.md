@@ -24,6 +24,24 @@ then report the results.
 - **Status updates** go in issue comments. Never rewrite the title or
   description to track progress.
 
+## Milestones
+
+Every issue, and the merge request that resolves it, attaches to a version
+milestone. The milestone title is the bare version string (for example
+`0.15.1`), with no `v` prefix.
+
+- The next version is derived from the repository's version file (for example
+  `pyproject.toml` or `setup.py` for Python, `Cargo.toml`, `package.json`):
+  patch +1 on the current version, unless the user names a different version.
+- At discovery, list the active milestones. Exactly one: attach every new
+  issue to it. Several: ask the user which milestone each issue belongs to.
+  None: propose creating the next-version milestone derived above, and create
+  it only after the user confirms.
+- Attaching an issue to a milestone, or moving it, is never silent. If the
+  user names a milestone, use it as given.
+- The merge request attaches to its issue's milestone when it is created
+  (the `work-issue` skill handles this; it is not a step in this skill).
+
 ## Reproduction
 
 Reproduce and explore every defect fully before creating its issue.
@@ -43,18 +61,27 @@ Reproduce and explore every defect fully before creating its issue.
    On GitLab, `scripts/glab_query.py issues --next-id` (next to this skills
    directory) prints that number + 1; note `glab issue list` prints nothing
    in work-items projects, while the script's issues subcommand works.
-2. For each item, create the issue with the tracker CLI. Pass multi-line
-   descriptions via a heredoc so the shell does not mangle them. Collect every
-   returned URL as it appears.
-3. Verify with the tracker CLI that every item exists and is open.
-4. Report a table: number, title, scope. Offer to start work on any of them.
-   Branch and merge request creation belong to the `work-issue` skill, not
-   here.
+   Also list the active version milestones (`scripts/glab_query.py milestones`
+   or `glab milestone list --state active`) and pick the target milestone per
+   the Milestones section: the single active one, or after asking, or a newly
+   proposed one.
+2. For each item, create the issue with the tracker CLI, attached to its
+   milestone (on GitLab, `glab issue create --milestone <title>`). Pass
+   multi-line descriptions via a heredoc so the shell does not mangle them.
+   Collect every returned URL as it appears.
+3. Verify with the tracker CLI that every item exists, is open, and is
+   attached to the milestone it was created under
+   (`scripts/glab_query.py issues --milestone <title>`).
+4. Report a table: number, title, milestone, scope. Offer to start work on
+   any of them. Branch and merge request creation belong to the `work-issue`
+   skill, not here.
 
 ## Rules
 
 - Do not create branches or merge requests in this skill.
 - Do not edit code in this skill.
+- Do not create an issue without a milestone unless the user explicitly
+  declines one.
 - If the user has not specified priority order, do not invent one. Present the
   list and let the user choose.
 
@@ -65,7 +92,8 @@ override exists for this repository. Apply the conventions above with the
 values discovered from the repository docs, and propose a project-local
 override at `.opencode/skills/create-issues/SKILL.md` that inlines those
 concrete values (tracker CLI and its exact create command, title and
-description conventions, verification command, report format).
+description conventions, the version file and its current version so the
+next-milestone title is known, verification command, report format).
 
 Create overrides on a per-repo basis: each repository, or each package within
 a monorepo that owns its own workflow, gets its own `.opencode/skills`

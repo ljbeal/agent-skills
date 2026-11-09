@@ -7,13 +7,16 @@ project view, falling back to the origin remote URL). Data is fetched with
 `glab api` and parsed here, so all of glab's auth handling still applies.
 
 Subcommands:
-  issues     List issues (work items): --state, --limit, --next-id
-  pipelines  List recent pipelines: --ref, --limit
-  jobs       Jobs and statuses of one pipeline (long external ID)
+  issues      List issues (work items): --state, --limit, --next-id, --milestone
+  milestones  List milestones with progress: --state active|closed|all, --no-progress
+  pipelines   List recent pipelines: --ref, --limit
+  jobs        Jobs and statuses of one pipeline (long external ID)
 
 Examples:
   glab_query.py issues --state opened
   glab_query.py issues --next-id
+  glab_query.py issues --milestone 0.15.1
+  glab_query.py milestones
   glab_query.py pipelines --ref devel --limit 5
   glab_query.py jobs 3003993071
 
@@ -91,16 +94,95 @@ def current_branch():
     ).stdout.strip()
 
 
+def milestone_title(issue):
+    m = issue.get("milestone")
+    return m.get("title") if m else ""
+
+
 def cmd_issues(args):
-    data = api(f"issues?state={args.state}&per_page=100")
+    endpoint = f"issues?state={args.state}&per_page=100"
+    data = api(endpoint)
     if args.next_id:
+        # issue IDs are project-wide, so never apply the milestone filter first
         print(max((i["iid"] for i in data), default=0) + 1)
         return
+    if args.milestone:
+        data = [i for i in data if milestone_title(i) == args.milestone]
     data.sort(key=lambda i: i["iid"], reverse=True)
     for issue in data[: args.limit]:
         print(
             f"{issue['iid']:>5}  {issue['state']:<8}  "
-            f"{label_names(issue):<24}  {issue['title']}"
+            f"{label_names(issue):<24}  {milestone_title(issue):<12}  "
+            f"{issue['title']}"
+        )
+
+
+def all_issues():
+    """Every issue in the project (opened and closed), paged."""
+    out = []
+    for state in ("opened", "closed"):
+        page = 1
+        while True:
+            data = api(f"issues?state={state}&per_page=100&page={page}")
+            out.extend(data)
+            if len(data) < 100:
+                break
+            page += 1
+    return out
+
+
+def milestone_counts():
+    """Issue counts per milestone title, by state (client-side: the REST
+    milestones response carries no issue counts)."""
+    counts = {"opened": {}, "closed": {}}
+    for issue in all_issues():
+        title = milestone_title(issue)
+        if title:
+            counts[issue["state"]][title] = counts[issue["state"]].get(title, 0) + 1
+    return counts
+
+
+def merge_request_counts(titles):
+    """MR counts per milestone title: open and done (merged + closed). One
+    paged query per state per milestone; the API's milestone filter works on
+    MRs, unlike on issues."""
+    counts = {t: {"open": 0, "done": 0} for t in titles}
+    for state, key in (("opened", "open"), ("merged", "done"), ("closed", "done")):
+        for title in titles:
+            page = 1
+            while True:
+                data = api(
+                    "merge_requests?"
+                    f"milestone={urllib.parse.quote(title, safe='')}"
+                    f"&state={state}&per_page=100&page={page}"
+                )
+                counts[title][key] += len(data)
+                if len(data) < 100:
+                    break
+                page += 1
+    return counts
+
+
+def cmd_milestones(args):
+    # state values for milestones are active/closed, unlike issues (opened)
+    data = api(f"milestones?state={args.state}&per_page=100")
+    data.sort(key=lambda m: m["iid"], reverse=True)
+    issue_counts = mr_counts = None
+    if not args.no_progress:
+        issue_counts = milestone_counts()
+        mr_counts = merge_request_counts([m["title"] for m in data])
+    for m in data:
+        title = m["title"]
+        done = issue_counts["closed"].get(title, 0) if issue_counts else 0
+        pending = issue_counts["opened"].get(title, 0) if issue_counts else 0
+        issues = f"{done}/{done + pending} issues" if issue_counts else ""
+        mr = mr_counts[title] if mr_counts else None
+        mrs = f"{mr['done']}/{mr['done'] + mr['open']} MRs" if mr else ""
+        progress = "  ".join(p for p in (issues, mrs) if p)
+        desc = (m.get("description") or "").replace("\n", " ")
+        print(
+            f"{m['iid']:>5}  {m['state']:<7}  {title:<16}  {progress:<24}  "
+            f"{m.get('due_date') or 'no due date':<10}  {desc}"
         )
 
 
@@ -146,7 +228,29 @@ def main():
         action="store_true",
         help="print the next unused issue number and exit",
     )
+    p_issues.add_argument(
+        "--milestone",
+        default=None,
+        help="filter by milestone title (client-side: the API's milestone_title "
+        "parameter is ignored on work-items projects)",
+    )
     p_issues.set_defaults(func=cmd_issues)
+
+    p_miles = sub.add_parser(
+        "milestones", help="list milestones with issue progress"
+    )
+    p_miles.add_argument(
+        "--state",
+        default="active",
+        choices=["active", "closed", "all"],
+        help="milestone state (note: active, not opened)",
+    )
+    p_miles.add_argument(
+        "--no-progress",
+        action="store_true",
+        help="skip counting issues (fewer API calls)",
+    )
+    p_miles.set_defaults(func=cmd_milestones)
 
     p_pipes = sub.add_parser("pipelines", help="list recent pipelines")
     p_pipes.add_argument(

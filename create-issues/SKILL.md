@@ -87,16 +87,5 @@ Reproduce and explore every defect fully before creating its issue.
 
 ## Per-repo override
 
-This is the generic skill. If this generic version loaded, no project-local
-override exists for this repository. Apply the conventions above with the
-values discovered from the repository docs, and propose a project-local
-override at `.opencode/skills/create-issues/SKILL.md` that inlines those
-concrete values (tracker CLI and its exact create command, title and
-description conventions, the version file and its current version so the
-next-milestone title is known, verification command, report format).
-
-Create overrides on a per-repo basis: each repository, or each package within
-a monorepo that owns its own workflow, gets its own `.opencode/skills`
-directory (nested package directories are discovered as well). Commit
-overrides to the repository's default branch as tooling, not to a feature
-branch.
+This is the generic skill. Be sure to check for local overrides, or additional
+instructions such as AGENTS.md

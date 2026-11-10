@@ -116,7 +116,7 @@ With `gh` (GitHub): `gh run list --branch <branch>` for the run,
      close it, close it explicitly.
    - If the issue had a milestone, report the milestone's new progress
      (for example `0.15.1: 3/3 complete`, from `scripts/glab_query.py
-     milestones`). Reporting only: this skill never closes a milestone and
+milestones`). Reporting only: this skill never closes a milestone and
      does not propose closing one.
 
 ## Rules
@@ -134,14 +134,5 @@ With `gh` (GitHub): `gh run list --branch <branch>` for the run,
 
 ## Per-repo override
 
-This is the generic skill. If this generic version loaded, no project-local
-override exists for this repository. After discovering the repo values above,
-propose a project-local override at `.opencode/skills/close-issue/SKILL.md`
-that inlines those concrete values (merge style, exact test and lint commands,
-tracker CLI and close command, review checklist tuned to the repository).
-
-Create overrides on a per-repo basis: each repository, or each package within
-a monorepo that owns its own workflow, gets its own `.opencode/skills`
-directory (nested package directories are discovered as well). Commit
-overrides to the repository's default branch as tooling, not to a feature
-branch.
+This is the generic skill. Be sure to check for local overrides, or additional
+instructions such as AGENTS.md

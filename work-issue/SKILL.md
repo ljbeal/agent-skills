@@ -25,7 +25,7 @@ from existing branches and merge requests:
 - The tracker CLI and its close-link format (for example `Closes #N`)
 - The issue's version milestone, and the active milestones if the issue has
   none (`glab milestone list --state active` or `scripts/glab_query.py
-  milestones`)
+milestones`)
 
 ## Phase 1: Start
 
@@ -90,16 +90,5 @@ close out.
 
 ## Per-repo override
 
-This is the generic skill. If this generic version loaded, no project-local
-override exists for this repository. After discovering the repo values above,
-propose a project-local override at `.opencode/skills/work-issue/SKILL.md`
-that inlines those concrete values (branch target and naming, exact test and
-lint commands, tracker CLI, the version file and its current version, MR
-template), plus its own
-`references/mr-template.md`.
-
-Create overrides on a per-repo basis: each repository, or each package within
-a monorepo that owns its own workflow, gets its own `.opencode/skills`
-directory (nested package directories are discovered as well). Commit
-overrides to the repository's default branch as tooling, not to a feature
-branch.
+This is the generic skill. Be sure to check for local overrides, or additional
+instructions such as AGENTS.md
